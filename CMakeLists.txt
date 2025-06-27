@@ -15,6 +15,8 @@ find_package(Ceres REQUIRED)
 
 set(SOURCES
   src/main.cpp
+  src/color_correction_application.hpp
+  src/color_correction_application.cpp
   src/image_data.hpp
   src/image_file_handler.hpp
   src/image_file_handler.cpp
