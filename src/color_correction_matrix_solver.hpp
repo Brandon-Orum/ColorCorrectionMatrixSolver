@@ -23,6 +23,9 @@ struct ColorCorrectionMatrix {
 class ColorCorrectionMatrixSolver {
 public:
     ColorCorrectionMatrix Solve(const ImageData& startImage, const ImageData& targetImage);
+    
+    // Apply a color correction matrix to an image
+    static ImageData ApplyMatrix(const ImageData& inputImage, const ColorCorrectionMatrix& correctionMatrix);
 
 private:
     struct CostFunctor {

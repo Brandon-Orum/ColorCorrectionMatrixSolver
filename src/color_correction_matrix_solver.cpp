@@ -1,6 +1,7 @@
 #include "color_correction_matrix_solver.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 
 ColorCorrectionMatrix ColorCorrectionMatrixSolver::Solve(const ImageData& startImage, const ImageData& targetImage) {
 	// Check that images have the same dimensions and are RGB
@@ -71,4 +72,59 @@ ColorCorrectionMatrix ColorCorrectionMatrixSolver::Solve(const ImageData& startI
 					 m_r[2], m_g[2], m_b[2];
 	
 	return result;
+}
+
+ImageData ColorCorrectionMatrixSolver::ApplyMatrix(const ImageData& inputImage, const ColorCorrectionMatrix& correctionMatrix) {
+    // Validate input image
+    if (!inputImage.isValid()) {
+        throw std::invalid_argument("Input image is not valid");
+    }
+    
+    if (inputImage.channels != 3) {
+        throw std::invalid_argument("Image must be RGB (3 channels), but has " + std::to_string(inputImage.channels) + " channels");
+    }
+    
+    // Create output image with same dimensions
+    ImageData outputImage;
+    outputImage.width = inputImage.width;
+    outputImage.height = inputImage.height;
+    outputImage.channels = inputImage.channels;
+    
+    // Allocate memory for output image data
+    int totalPixels = inputImage.width * inputImage.height * inputImage.channels;
+    unsigned char* outputData = new unsigned char[totalPixels];
+    outputImage.data = std::unique_ptr<unsigned char, void(*)(void*)>(outputData, [](void* ptr) { delete[] static_cast<unsigned char*>(ptr); });
+    
+    const unsigned char* inputData = inputImage.data.get();
+    
+    // Process each pixel
+    for (int y = 0; y < inputImage.height; ++y) {
+        for (int x = 0; x < inputImage.width; ++x) {
+            // Calculate pixel index
+            int pixelIndex = (y * inputImage.width + x) * inputImage.channels;
+            
+            // Extract RGB values and normalize to [0, 1] range
+            double r = inputData[pixelIndex] / 255.0;
+            double g = inputData[pixelIndex + 1] / 255.0;
+            double b = inputData[pixelIndex + 2] / 255.0;
+            
+            // Create input color vector
+            Eigen::Vector3d inputColor(r, g, b);
+            
+            // Apply color correction matrix
+            Eigen::Vector3d correctedColor = correctionMatrix.apply(inputColor);
+            
+            // Clamp values to [0, 1] range
+            correctedColor[0] = std::max(0.0, std::min(1.0, correctedColor[0]));
+            correctedColor[1] = std::max(0.0, std::min(1.0, correctedColor[1]));
+            correctedColor[2] = std::max(0.0, std::min(1.0, correctedColor[2]));
+            
+            // Convert back to [0, 255] range and store in output
+            outputData[pixelIndex] = static_cast<unsigned char>(std::round(correctedColor[0] * 255.0));
+            outputData[pixelIndex + 1] = static_cast<unsigned char>(std::round(correctedColor[1] * 255.0));
+            outputData[pixelIndex + 2] = static_cast<unsigned char>(std::round(correctedColor[2] * 255.0));
+        }
+    }
+    
+    return outputImage;
 }
