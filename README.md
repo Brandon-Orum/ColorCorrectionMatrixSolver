@@ -112,16 +112,7 @@ For each pixel in the images, the algorithm:
 - **Color Correction Matrix**: 3x3 transformation matrix
 - **Corrected Image** (optional): Start image transformed to match target colors
 
-*[You can add your example images here showing the transformation]*
-
-![Start Image](images/start_image_example.png)
-*Start image with original color characteristics*
-
-![Target Image](images/target_image_example.png)
-*Target image with desired color characteristics*
-
-![Corrected Image](images/corrected_result_example.png)
-*Result after applying the computed color correction matrix*
+![Demo Image](images/demo_image.png)
 
 ## Technical Details
 
