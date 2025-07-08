@@ -6,14 +6,6 @@ A C++ application that computes and applies 3x3 color correction matrices to tra
 
 The Color Correction Matrix Solver uses the Ceres Solver optimization library to find a 3x3 color correction matrix that best transforms colors from a source image to match a target image. The solver minimizes the difference between the transformed source colors and the target colors across all pixels.
 
-## Key Features
-
-- **Automatic Color Correction**: Computes optimal 3x3 transformation matrices
-- **High-Quality Optimization**: Uses Google's Ceres Solver for robust mathematical optimization
-- **Flexible Output**: Can display the matrix or apply it to generate corrected images
-- **Image Format Support**: Handles common image formats through extensible image handler
-- **Command-Line Interface**: Simple and intuitive usage
-
 ## Dependencies
 
 - **C++17** compatible compiler
